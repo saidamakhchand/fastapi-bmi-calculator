@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب مؤشر كتلة الجسم (BMI)</title>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #eafaf1;
+            border-radius: 5px;
+            color: #2ecc71;
+            font-size: 18px;
+        }
+
+        .result.error {
+            background-color: #fdecea;
+            color: #e74c3c;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>حساب مؤشر كتلة الجسم (BMI)</h1>
+        <form id="bmi-form">
+            <label for="weight">الوزن (بالكيلوغرام):</label>
+            <input type="number" id="weight" name="weight" required>
+
+            <label for="height">الطول (بالسنتيمتر):</label>
+            <input type="number" id="height" name="height" required>
+
+            <button type="submit">احسب BMI</button>
+        </form>
+
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <footer>
+        <p>تم التطوير بواسطة <a href="#">فريق Dev Dynamos</a></p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('bmi-form');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const weight = document.getElementById('weight').value;
+            const height = document.getElementById('height').value;
+
+            if (!weight || !height) {
+                resultDiv.textContent = "يرجى إدخال الوزن والطول بشكل صحيح.";
+                resultDiv.classList.add('error');
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            const response = await fetch(`http://127.0.0.1:8000/calculate_bmi?weight=${weight}&height=${height}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                resultDiv.textContent = `BMI: ${data.bmi.toFixed(2)} - ${data.message}`;
+                resultDiv.classList.remove('error');
+            } else {
+                resultDiv.textContent = "حدث خطأ أثناء الحساب.";
+                resultDiv.classList.add('error');
+            }
+
+            resultDiv.style.display = 'block';
+        });
+    </script>
+
+</body>
+</html>
